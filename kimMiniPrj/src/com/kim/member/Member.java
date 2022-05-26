@@ -11,6 +11,8 @@ import com.kim.util.MyUtil;
 
 public class Member {
 	
+	public static int loginUserNo;	
+	
 	public boolean login() {
 		System.out.println("========로그인==========");
 		System.out.print("아이디 : ");
@@ -22,7 +24,7 @@ public class Member {
 		//DB 연결 얻기
 		Connection conn =  OracleDB.getOracleConnection();
 		//해당 아이디에 맞는 패스워드 조회하기(DB)
-		String sql = "SELECT PWD FROM MEMBER WHERE ID = ?"; //패스워드를 조회하는데 id가 ? 인 친구의 pwd를 조회
+		String sql = "SELECT NO, PWD FROM MEMBER WHERE ID = ?"; //패스워드를 조회하는데 id가 ? 인 친구의 pwd를 조회
 		//String sql = "SELECT PWD FROM MEMBER WHERE UPPER(ID) = UPPER(?)"; 대소문자 구분없이
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -32,8 +34,11 @@ public class Member {
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
-				String dbPwd = rs.getString(1); // 첫번째 칼럼의 행을 조회 
+				String dbPwd = rs.getString("PWD"); // 첫번째 칼럼의 행을 조회 
+				int no = rs.getInt("NO");
 				if(dbPwd.equalsIgnoreCase(pwd)) {
+					//로그인 성공
+					loginUserNo = no;
 					System.out.println("로그인 성공!!!");
 					return true;
 				}
